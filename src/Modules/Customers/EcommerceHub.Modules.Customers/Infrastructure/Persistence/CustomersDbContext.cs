@@ -8,6 +8,7 @@ public sealed class CustomersDbContext(DbContextOptions<CustomersDbContext> opti
     : DbContext(options)
 {
     public DbSet<CustomerAddress> CustomerAddresses => Set<CustomerAddress>();
+    public DbSet<CustomerProfile> CustomerProfiles => Set<CustomerProfile>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.AddInterceptors(auditInterceptor);

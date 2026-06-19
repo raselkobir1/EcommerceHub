@@ -41,11 +41,12 @@ export default function CreateProductPage() {
   const qc = useQueryClient()
   const [serverError, setServerError] = useState('')
 
-  const { data: categoriesResult } = useQuery({
+  const { data: categoryTree } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoryService.getCategories(),
   })
-  const categories = categoriesResult?.items ?? []
+  // Flatten tree: root + all children
+  const categories = (categoryTree ?? []).flatMap((c) => [c, ...(c.children ?? [])])
 
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),

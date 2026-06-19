@@ -1,4 +1,8 @@
+using EcommerceHub.Modules.Catalog.Application.Commands.ArchiveProduct;
 using EcommerceHub.Modules.Catalog.Application.Commands.CreateProduct;
+using EcommerceHub.Modules.Catalog.Application.Commands.DeleteProduct;
+using EcommerceHub.Modules.Catalog.Application.Commands.PublishProduct;
+using EcommerceHub.Modules.Catalog.Application.Commands.UpdateProduct;
 using EcommerceHub.Modules.Catalog.Application.DTOs;
 using EcommerceHub.Modules.Catalog.Application.Queries.GetProductById;
 using EcommerceHub.Modules.Catalog.Application.Queries.GetProducts;
@@ -72,17 +76,62 @@ public sealed class ProductsController(MediatR.ISender sender) : ApiController(s
         return BadRequest(ApiResponse<ProductDetailDto>.Fail(result.Error!));
     }
 
-    /// <summary>Publish a product making it visible to customers. Not yet implemented.</summary>
+    /// <summary>Update an existing product's core fields. Requires Manager role.</summary>
+    [HttpPut("{id:guid}")]
+    [Authorize(Policy = "Manager")]
+    [ProducesResponseType(typeof(ApiResponse<ProductDetailDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateProduct(
+        [FromRoute] Guid id,
+        [FromBody] UpdateProductCommand command,
+        CancellationToken ct)
+    {
+        if (id != command.Id)
+            return BadRequest(ApiResponse<object>.Fail("Route id does not match command id."));
+
+        var result = await Sender.Send(command, ct);
+
+        if (result.IsSuccess)
+            return Ok(ApiResponse<ProductDetailDto>.Ok(result.Value, "Product updated successfully."));
+
+        if (result.Error!.Contains("not found"))
+            return NotFound(ApiResponse<object>.Fail(result.Error));
+
+        return BadRequest(ApiResponse<object>.Fail(result.Error));
+    }
+
+    /// <summary>Soft-delete a product. Requires Manager role.</summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "Manager")]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteProduct([FromRoute] Guid id, CancellationToken ct)
+    {
+        var result = await Sender.Send(new DeleteProductCommand(id), ct);
+        return HandleResult(result);
+    }
+
+    /// <summary>Publish a product making it visible to customers. Requires Manager role.</summary>
     [HttpPost("{id:guid}/publish")]
     [Authorize(Policy = "Manager")]
-    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
-    public IActionResult PublishProduct([FromRoute] Guid id)
-        => NotImplementedResponse();
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PublishProduct([FromRoute] Guid id, CancellationToken ct)
+    {
+        var result = await Sender.Send(new PublishProductCommand(id), ct);
+        return HandleResult(result);
+    }
 
-    /// <summary>Archive a product removing it from the public catalog. Not yet implemented.</summary>
+    /// <summary>Archive a product removing it from the public catalog. Requires Manager role.</summary>
     [HttpPost("{id:guid}/archive")]
     [Authorize(Policy = "Manager")]
-    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
-    public IActionResult ArchiveProduct([FromRoute] Guid id)
-        => NotImplementedResponse();
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ArchiveProduct([FromRoute] Guid id, CancellationToken ct)
+    {
+        var result = await Sender.Send(new ArchiveProductCommand(id), ct);
+        return HandleResult(result);
+    }
 }

@@ -54,3 +54,17 @@ public sealed record PlaceOrderItemRequest(
     string? ImageUrl,
     decimal UnitPrice,
     int Quantity);
+
+public sealed record OrderListDto(
+    Guid Id,
+    string OrderNumber,
+    Guid? CustomerId,
+    string CustomerName,
+    string CustomerEmail,
+    string CustomerPhone,
+    string Status,
+    string PaymentStatus,
+    string PaymentMethod,
+    decimal GrandTotal,
+    int ItemCount,
+    DateTime CreatedAt);

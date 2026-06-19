@@ -1,5 +1,12 @@
 import { api } from '@/lib/api'
-import type { ApiResponse, DailyOrderCountDto, DailyRevenueDto, DashboardStatsDto, ReportSummaryDto } from '@/types'
+import type {
+  ApiResponse,
+  DailyOrderCountDto,
+  DailyRevenueDto,
+  DashboardStatsDto,
+  ReportSummaryDto,
+  TopProductDto,
+} from '@/types'
 
 export const reportService = {
   getDashboardStats: () =>
@@ -19,17 +26,25 @@ export const reportService = {
       })
       .then((r) => r.data.data),
 
-  getReportSummary: (fromDate: string, toDate: string) =>
+  // GET /api/reports/summary — no date params; backend returns period-fixed summary
+  getReportSummary: () =>
     api
-      .get<ApiResponse<ReportSummaryDto>>('/reports/summary', {
-        params: { fromDate, toDate },
+      .get<ApiResponse<ReportSummaryDto>>('/reports/summary')
+      .then((r) => r.data.data),
+
+  // GET /api/reports/daily-revenue?days=30
+  getDailyRevenue: (days = 30) =>
+    api
+      .get<ApiResponse<DailyRevenueDto[]>>('/reports/daily-revenue', {
+        params: { days },
       })
       .then((r) => r.data.data),
 
-  getDailyRevenue: (fromDate: string, toDate: string) =>
+  // GET /api/reports/top-products?limit=10
+  getTopProducts: (limit = 10) =>
     api
-      .get<ApiResponse<DailyRevenueDto[]>>('/reports/daily-revenue', {
-        params: { fromDate, toDate },
+      .get<ApiResponse<TopProductDto[]>>('/reports/top-products', {
+        params: { limit },
       })
       .then((r) => r.data.data),
 }

@@ -21,6 +21,7 @@ public sealed class CustomersModule : IModule
                 npgsql => npgsql.MigrationsHistoryTable("__ef_migrations_history", "customers")));
 
         services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
+        services.AddScoped<ICustomerProfileRepository, CustomerProfileRepository>();
         services.AddScoped<ICustomersUnitOfWork, CustomersUnitOfWork>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CustomersModule).Assembly));

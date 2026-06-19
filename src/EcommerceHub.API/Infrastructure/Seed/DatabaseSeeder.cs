@@ -1,8 +1,16 @@
 using EcommerceHub.Modules.Auth.Domain.Entities;
 using EcommerceHub.Modules.Auth.Domain.Enums;
 using EcommerceHub.Modules.Auth.Infrastructure.Persistence;
+using EcommerceHub.Modules.Cart.Infrastructure.Persistence;
 using EcommerceHub.Modules.Catalog.Domain.Entities;
 using EcommerceHub.Modules.Catalog.Infrastructure.Persistence;
+using EcommerceHub.Modules.Customers.Infrastructure.Persistence;
+using EcommerceHub.Modules.Inventory.Infrastructure.Persistence;
+using EcommerceHub.Modules.Orders.Infrastructure.Persistence;
+using EcommerceHub.Modules.Payments.Infrastructure.Persistence;
+using EcommerceHub.Modules.Promotions.Infrastructure.Persistence;
+using EcommerceHub.Modules.Reviews.Infrastructure.Persistence;
+using EcommerceHub.Modules.Suppliers.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceHub.API.Infrastructure.Seed;
@@ -12,15 +20,39 @@ public static class DatabaseSeeder
     public static async Task SeedAsync(IServiceProvider services, ILogger logger)
     {
         using var scope = services.CreateScope();
+        var sp = scope.ServiceProvider;
 
-        await SeedAdminUserAsync(scope.ServiceProvider, logger);
-        await SeedCategoriesAsync(scope.ServiceProvider, logger);
+        await MigrateAllAsync(sp, logger);
+        await SeedAdminUserAsync(sp, logger);
+        await SeedCategoriesAsync(sp, logger);
+    }
+
+    private static async Task MigrateAllAsync(IServiceProvider sp, ILogger logger)
+    {
+        var contexts = new[]
+        {
+            ("Auth",       (DbContext)sp.GetRequiredService<AuthDbContext>()),
+            ("Catalog",    sp.GetRequiredService<CatalogDbContext>()),
+            ("Orders",     sp.GetRequiredService<OrdersDbContext>()),
+            ("Cart",       sp.GetRequiredService<CartDbContext>()),
+            ("Inventory",  sp.GetRequiredService<InventoryDbContext>()),
+            ("Promotions", sp.GetRequiredService<PromotionsDbContext>()),
+            ("Customers",  sp.GetRequiredService<CustomersDbContext>()),
+            ("Suppliers",  sp.GetRequiredService<SuppliersDbContext>()),
+            ("Reviews",    sp.GetRequiredService<ReviewsDbContext>()),
+            ("Payments",   sp.GetRequiredService<PaymentsDbContext>()),
+        };
+
+        foreach (var (name, ctx) in contexts)
+        {
+            await ctx.Database.MigrateAsync();
+            logger.LogInformation("{Module} DB migrated.", name);
+        }
     }
 
     private static async Task SeedAdminUserAsync(IServiceProvider sp, ILogger logger)
     {
         var db = sp.GetRequiredService<AuthDbContext>();
-        await db.Database.MigrateAsync();
 
         const string adminEmail = "admin@ecommercehub.com";
 
@@ -44,7 +76,6 @@ public static class DatabaseSeeder
     private static async Task SeedCategoriesAsync(IServiceProvider sp, ILogger logger)
     {
         var db = sp.GetRequiredService<CatalogDbContext>();
-        await db.Database.MigrateAsync();
 
         if (await db.Categories.AnyAsync(c => c.ParentId == null))
         {
@@ -52,17 +83,16 @@ public static class DatabaseSeeder
             return;
         }
 
-        // BD-relevant root categories (icon stored as imageUrl for display purposes)
         var categories = new[]
         {
-            ("Electronics",     "electronics",      "📱", 1),
-            ("Fashion",         "fashion",          "👗", 2),
-            ("Home & Living",   "home-living",      "🏠", 3),
-            ("Books & Education","books-education", "📚", 4),
-            ("Sports & Outdoors","sports-outdoors", "⚽", 5),
-            ("Health & Beauty", "health-beauty",    "💊", 6),
-            ("Food & Grocery",  "food-grocery",     "🛒", 7),
-            ("Toys & Kids",     "toys-kids",        "🧸", 8),
+            ("Electronics",      "electronics",       "📱", 1),
+            ("Fashion",          "fashion",           "👗", 2),
+            ("Home & Living",    "home-living",       "🏠", 3),
+            ("Books & Education","books-education",   "📚", 4),
+            ("Sports & Outdoors","sports-outdoors",   "⚽", 5),
+            ("Health & Beauty",  "health-beauty",     "💊", 6),
+            ("Food & Grocery",   "food-grocery",      "🛒", 7),
+            ("Toys & Kids",      "toys-kids",         "🧸", 8),
         };
 
         foreach (var (name, slug, icon, sortOrder) in categories)

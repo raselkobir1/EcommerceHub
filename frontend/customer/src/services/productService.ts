@@ -3,17 +3,23 @@ import type { ApiResponse, PagedResult, Product, Category, Review } from '@/type
 
 export const productService = {
   getProducts: async (params?: { page?: number; pageSize?: number; search?: string; categorySlug?: string; minPrice?: number; maxPrice?: number; sort?: string }) => {
-    const { data } = await api.get<ApiResponse<PagedResult<Product>>>('/api/catalog/products', { params })
-    return data.data
+    const { data } = await api.get<ApiResponse<PagedResult<Product>>>('/api/products', { params })
+    const result = data.data
+    if (result?.items) {
+      result.items = result.items.map((p) => ({ ...p, images: p.images ?? [], variants: p.variants ?? [] }))
+    }
+    return result
   },
 
   getProductBySlug: async (slug: string) => {
-    const { data } = await api.get<ApiResponse<Product>>(`/api/catalog/products/${slug}`)
-    return data.data
+    const { data } = await api.get<ApiResponse<Product>>(`/api/products/${slug}`)
+    const p = data.data
+    if (p) return { ...p, images: p.images ?? [], variants: p.variants ?? [] }
+    return p
   },
 
   getCategories: async () => {
-    const { data } = await api.get<ApiResponse<Category[]>>('/api/catalog/categories')
+    const { data } = await api.get<ApiResponse<Category[]>>('/api/categories')
     return data.data
   },
 

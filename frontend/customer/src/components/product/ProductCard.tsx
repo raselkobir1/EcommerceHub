@@ -13,7 +13,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem)
-  const primaryImage = product.images.find((i) => i.isPrimary) ?? product.images[0]
+  const images = product.images ?? []
+  const primaryImage = images.find((i) => i.isPrimary) ?? images[0]
   const inStock = product.stockQuantity > 0
 
   const handleAddToCart = (e: React.MouseEvent) => {

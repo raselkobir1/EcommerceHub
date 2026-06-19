@@ -9,10 +9,9 @@ import type {
 
 export interface AdjustStockRequest {
   variantId: string
-  reason: AdjustmentReason
   quantityChange: number
+  reason: AdjustmentReason
   notes?: string
-  referenceNumber?: string
 }
 
 export const inventoryService = {
@@ -20,19 +19,19 @@ export const inventoryService = {
     page?: number
     pageSize?: number
     search?: string
-    lowStockOnly?: boolean
+    lowStock?: boolean
   }) =>
     api
-      .get<ApiResponse<PagedResult<InventoryItemDto>>>('/inventory', { params })
+      .get<ApiResponse<PagedResult<InventoryItemDto>>>('/inventory/items', { params })
       .then((r) => r.data.data),
 
   adjustStock: (data: AdjustStockRequest) =>
     api
-      .post<ApiResponse<StockAdjustmentDto>>('/inventory/adjust', data)
+      .post<ApiResponse<StockAdjustmentDto>>('/inventory/adjustments', data)
       .then((r) => r.data.data),
 
-  getAdjustmentHistory: (variantId: string) =>
+  getAdjustmentHistory: (productId: string) =>
     api
-      .get<ApiResponse<StockAdjustmentDto[]>>(`/inventory/${variantId}/history`)
+      .get<ApiResponse<PagedResult<StockAdjustmentDto>>>(`/inventory/adjustments/product/${productId}`)
       .then((r) => r.data.data),
 }

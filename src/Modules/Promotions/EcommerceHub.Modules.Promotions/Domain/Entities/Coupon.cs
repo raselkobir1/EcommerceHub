@@ -80,6 +80,31 @@ public sealed class Coupon : AuditableEntity
         _usages.Add(CouponUsage.Create(Id, customerId, orderId));
     }
 
+    public void Update(
+        string code,
+        CouponType type,
+        decimal value,
+        DateTime startDate,
+        DateTime? expiryDate,
+        decimal? minimumOrderAmount,
+        int? totalUsageLimit,
+        int? perCustomerLimit)
+    {
+        if (value <= 0) throw new DomainException("Coupon value must be positive.");
+        if (type == CouponType.Percentage && value > 100)
+            throw new DomainException("Percentage coupon cannot exceed 100%.");
+
+        Code = code.ToUpperInvariant();
+        Type = type;
+        Value = value;
+        StartDate = startDate;
+        ExpiryDate = expiryDate;
+        MinimumOrderAmount = minimumOrderAmount;
+        TotalUsageLimit = totalUsageLimit;
+        PerCustomerLimit = perCustomerLimit;
+    }
+
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
+    public void Toggle() => IsActive = !IsActive;
 }

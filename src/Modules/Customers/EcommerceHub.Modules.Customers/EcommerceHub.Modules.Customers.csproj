@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><RootNamespace>EcommerceHub.Modules.Customers</RootNamespace></PropertyGroup>
-  <ItemGroup><ProjectReference Include="..\..\..\EcommerceHub.Shared.Kernel\EcommerceHub.Shared.Kernel.csproj" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\EcommerceHub.Shared.Kernel\EcommerceHub.Shared.Kernel.csproj" />
+    <ProjectReference Include="..\..\Auth\EcommerceHub.Modules.Auth\EcommerceHub.Modules.Auth.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />

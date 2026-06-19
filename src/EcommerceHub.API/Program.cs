@@ -120,14 +120,24 @@ builder.Services.AddAuthorization(opts =>
 // ── CORS ──────────────────────────────────────────────────────────────────────
 builder.Services.AddCors(opts =>
 {
+    var adminOrigins = builder.Configuration.GetSection("Cors:AdminOrigins").Get<string[]>() ?? ["http://localhost:5173"];
+    var customerOrigins = builder.Configuration.GetSection("Cors:CustomerOrigins").Get<string[]>() ?? ["http://localhost:3000"];
+    var allOrigins = adminOrigins.Concat(customerOrigins).ToArray();
+
+    opts.AddPolicy("AllPortals", p =>
+        p.WithOrigins(allOrigins)
+         .AllowAnyMethod()
+         .AllowAnyHeader()
+         .AllowCredentials());
+
     opts.AddPolicy("AdminPortal", p =>
-        p.WithOrigins(builder.Configuration.GetSection("Cors:AdminOrigins").Get<string[]>() ?? ["http://localhost:5173"])
+        p.WithOrigins(adminOrigins)
          .AllowAnyMethod()
          .AllowAnyHeader()
          .AllowCredentials());
 
     opts.AddPolicy("CustomerPortal", p =>
-        p.WithOrigins(builder.Configuration.GetSection("Cors:CustomerOrigins").Get<string[]>() ?? ["http://localhost:3000"])
+        p.WithOrigins(customerOrigins)
          .AllowAnyMethod()
          .AllowAnyHeader()
          .AllowCredentials());
@@ -197,8 +207,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
-app.UseCors("CustomerPortal");
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
+
+app.UseCors("AllPortals");
 app.UseAuthentication();
 app.UseAuthorization();
 

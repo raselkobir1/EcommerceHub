@@ -24,9 +24,9 @@ export const orderService = {
       .get<ApiResponse<OrderDto>>(`/orders/${id}`)
       .then((r) => r.data.data),
 
-  updateOrderStatus: (id: string, status: OrderStatus, note?: string) =>
+  updateOrderStatus: (id: string, status: OrderStatus, notes?: string) =>
     api
-      .put<ApiResponse<OrderDto>>(`/orders/${id}/status`, { status, note })
+      .put<ApiResponse<OrderDto>>(`/orders/${id}/status`, { status, notes })
       .then((r) => r.data.data),
 
   cancelOrder: (id: string, reason: string) =>

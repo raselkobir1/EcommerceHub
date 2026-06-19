@@ -41,13 +41,13 @@ export interface CategoryDto {
   id: string
   name: string
   slug: string
-  parentId: string | null
-  parentName: string | null
+  description: string | null
   imageUrl: string | null
+  parentId: string | null
   isActive: boolean
   sortOrder: number
   productCount: number
-  createdAt: string
+  children: CategoryDto[]
 }
 
 export interface BrandDto {
@@ -197,25 +197,31 @@ export type AdjustmentReason =
   | 'Initial'
 
 export interface InventoryItemDto {
-  variantId: string
   productId: string
+  variantId: string
   productName: string
   sku: string
   stockQuantity: number
   reservedQuantity: number
   availableQuantity: number
-  reorderPoint: number | null
-  warehouseLocation: string | null
+  reorderPoint: number
+  isLowStock: boolean
+  lastUpdatedAt: string
 }
 
 export interface StockAdjustmentDto {
+  id: string
+  productId: string
   variantId: string
-  reason: AdjustmentReason
+  productName: string
+  sku: string
   quantityChange: number
+  oldStock: number
+  newStock: number
+  reason: AdjustmentReason
   notes: string | null
-  referenceNumber: string | null
-  adjustedAt: string
-  adjustedBy: string
+  adjustedByUserId: string
+  createdAt: string
 }
 
 // ─── Coupons ──────────────────────────────────────────────────────────────────
@@ -343,10 +349,20 @@ export interface ReportSummaryDto {
   totalOrders: number
   averageOrderValue: number
   totalItemsSold: number
+  newCustomers: number
+  revenueGrowthPercent: number
 }
 
 export interface DailyRevenueDto {
   date: string
   revenue: number
   orders: number
+}
+
+export interface TopProductDto {
+  productId: string
+  productName: string
+  sku: string
+  totalSold: number
+  totalRevenue: number
 }

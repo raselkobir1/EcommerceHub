@@ -18,7 +18,7 @@ export default function BdtPrice({ price, salePrice, className, size = 'md' }: B
   return (
     <span className={cn('inline-flex items-baseline gap-2', className)}>
       <span className={cn('font-bold text-primary-700', sizeClass)}>
-        ৳{display.toLocaleString('en-BD')}
+        ৳{display?.toLocaleString('en-BD')}
       </span>
       {hasDiscount && (
         <>

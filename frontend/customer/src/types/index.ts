@@ -85,6 +85,8 @@ export interface Customer {
   fullName: string
   email: string
   phone?: string
+  isEmailVerified?: boolean
+  createdAt?: string
 }
 
 export interface CustomerAddress {

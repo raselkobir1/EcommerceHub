@@ -46,7 +46,10 @@ export default function ProductDetailPage() {
 
   if (!product) return <div className="py-24 text-center text-gray-400">Product not found</div>
 
-  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId)
+  const images = product.images ?? []
+  const variants = product.variants ?? []
+
+  const selectedVariant = variants.find((v) => v.id === selectedVariantId)
   const price = selectedVariant?.salePrice ?? selectedVariant?.price ?? product.salePrice ?? product.price
   const originalPrice = selectedVariant?.price ?? product.price
   const inStock = (selectedVariant?.stockQuantity ?? product.stockQuantity) > 0
@@ -56,7 +59,7 @@ export default function ProductDetailPage() {
       productId: product.id,
       productName: product.name,
       productSlug: product.slug,
-      imageUrl: product.images[selectedImage]?.url,
+      imageUrl: images[selectedImage]?.url,
       variantId: selectedVariantId,
       variantAttributes: selectedVariant?.attributes,
       price,
@@ -66,7 +69,7 @@ export default function ProductDetailPage() {
     setTimeout(() => setAdded(false), 2000)
   }
 
-  const variantGroups = product.variants.reduce<Record<string, string[]>>((acc, v) => {
+  const variantGroups = variants.reduce<Record<string, string[]>>((acc, v) => {
     Object.entries(v.attributes).forEach(([k, val]) => {
       if (!acc[k]) acc[k] = []
       if (!acc[k].includes(val)) acc[k].push(val)
@@ -80,10 +83,10 @@ export default function ProductDetailPage() {
         {/* Images */}
         <div className="space-y-3">
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
-            {product.images[selectedImage] ? (
+            {images[selectedImage] ? (
               <Image
-                src={product.images[selectedImage].url}
-                alt={product.images[selectedImage].altText ?? product.name}
+                src={images[selectedImage].url}
+                alt={images[selectedImage].altText ?? product.name}
                 fill
                 className="object-cover"
                 priority
@@ -95,9 +98,9 @@ export default function ProductDetailPage() {
               </div>
             )}
           </div>
-          {product.images.length > 1 && (
+          {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {product.images.map((img, i) => (
+              {images.map((img, i) => (
                 <button key={img.id} onClick={() => setSelectedImage(i)}
                   className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${i === selectedImage ? 'border-primary-500' : 'border-gray-200 hover:border-gray-400'}`}>
                   <Image src={img.url} alt={img.altText ?? ''} fill className="object-cover" sizes="64px" />
@@ -128,7 +131,7 @@ export default function ProductDetailPage() {
               <p className="text-sm font-medium text-gray-700 mb-2">{key}</p>
               <div className="flex flex-wrap gap-2">
                 {values.map((val) => {
-                  const matchingVariant = product.variants.find((v) => v.attributes[key] === val)
+                  const matchingVariant = variants.find((v) => v.attributes[key] === val)
                   const isSelected = selectedVariantId === matchingVariant?.id
                   return (
                     <button key={val} onClick={() => setSelectedVariantId(matchingVariant?.id)}

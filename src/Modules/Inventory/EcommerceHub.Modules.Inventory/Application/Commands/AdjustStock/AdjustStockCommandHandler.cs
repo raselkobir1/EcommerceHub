@@ -5,10 +5,12 @@ using EcommerceHub.Modules.Inventory.Domain.Interfaces;
 using EcommerceHub.Modules.Inventory.Infrastructure.Persistence;
 using EcommerceHub.Shared.Kernel.Common;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceHub.Modules.Inventory.Application.Commands.AdjustStock;
 
 internal sealed class AdjustStockCommandHandler(
+    InventoryDbContext db,
     IStockAdjustmentRepository stockAdjustmentRepository,
     IInventoryUnitOfWork unitOfWork)
     : IRequestHandler<AdjustStockCommand, Result<StockAdjustmentDto>>
@@ -21,16 +23,28 @@ internal sealed class AdjustStockCommandHandler(
                 $"Invalid adjustment reason '{request.Reason}'. " +
                 $"Valid values: {string.Join(", ", Enum.GetNames<AdjustmentReason>())}.");
 
+        // Look up the latest stock state for this variant
+        var latest = await db.StockAdjustments
+            .AsNoTracking()
+            .Where(a => a.VariantId == request.VariantId)
+            .OrderByDescending(a => a.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+
+        if (latest is null)
+            return Result.Failure<StockAdjustmentDto>(
+                $"Variant '{request.VariantId}' has no inventory record. " +
+                "Create an initial adjustment first.");
+
         StockAdjustment adjustment;
         try
         {
             adjustment = StockAdjustment.Create(
-                request.ProductId,
-                request.VariantId,
-                request.ProductName,
-                request.Sku,
+                latest.ProductId,
+                latest.VariantId,
+                latest.ProductName,
+                latest.Sku,
                 request.QuantityChange,
-                request.CurrentStock,
+                latest.NewStock,
                 reason,
                 request.AdjustedByUserId,
                 request.Notes);
@@ -43,7 +57,7 @@ internal sealed class AdjustStockCommandHandler(
         await stockAdjustmentRepository.AddAsync(adjustment, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
-        var dto = new StockAdjustmentDto(
+        return Result.Success(new StockAdjustmentDto(
             adjustment.Id,
             adjustment.ProductId,
             adjustment.VariantId,
@@ -55,8 +69,6 @@ internal sealed class AdjustStockCommandHandler(
             adjustment.Reason.ToString(),
             adjustment.Notes,
             adjustment.AdjustedByUserId,
-            adjustment.CreatedAt);
-
-        return Result.Success(dto);
+            adjustment.CreatedAt));
     }
 }

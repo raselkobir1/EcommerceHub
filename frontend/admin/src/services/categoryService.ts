@@ -1,20 +1,21 @@
 import { api } from '@/lib/api'
-import type { ApiResponse, CategoryDto, PagedResult } from '@/types'
+import type { ApiResponse, CategoryDto } from '@/types'
 
 export interface CreateCategoryRequest {
   name: string
   slug: string
-  parentId?: string
+  parentId?: string | null
+  description?: string
   imageUrl?: string
-  isActive?: boolean
   sortOrder?: number
 }
 
 export const categoryService = {
-  getCategories: (params?: { page?: number; pageSize?: number; search?: string }) =>
+  // Returns the tree of root categories (each has .children[])
+  getCategories: () =>
     api
-      .get<ApiResponse<PagedResult<CategoryDto>>>('/categories', { params })
-      .then((r) => r.data.data),
+      .get<ApiResponse<CategoryDto[]>>('/categories')
+      .then((r) => r.data.data ?? []),
 
   getCategoryById: (id: string) =>
     api

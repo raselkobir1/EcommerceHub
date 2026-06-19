@@ -33,7 +33,12 @@ public sealed class Customer : SoftDeletableEntity
             PasswordHash = passwordHash
         };
         customer.GenerateEmailVerificationToken();
-        customer.RaiseDomainEvent(new CustomerRegisteredEvent(customer.Id, customer.Email, customer.EmailVerificationToken!));
+        customer.RaiseDomainEvent(new CustomerRegisteredEvent(
+            customer.Id,
+            customer.Email,
+            customer.EmailVerificationToken!,
+            customer.FullName,
+            customer.Phone));
         return customer;
     }
 

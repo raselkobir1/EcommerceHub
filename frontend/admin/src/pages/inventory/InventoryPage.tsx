@@ -23,7 +23,7 @@ export default function InventoryPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['inventory'],
-    queryFn: () => inventoryService.getInventory({ lowStockOnly: showLowStock }),
+    queryFn: () => inventoryService.getInventory({ lowStock: showLowStock }),
   })
 
   const { mutate, isPending } = useMutation({

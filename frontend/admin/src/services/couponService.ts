@@ -17,24 +17,24 @@ export interface CreateCouponRequest {
 export const couponService = {
   getCoupons: (params?: { page?: number; pageSize?: number; search?: string }) =>
     api
-      .get<ApiResponse<PagedResult<CouponDto>>>('/promotions/coupons', { params })
+      .get<ApiResponse<PagedResult<CouponDto>>>('/coupons', { params })
       .then((r) => r.data.data),
 
   createCoupon: (data: CreateCouponRequest) =>
     api
-      .post<ApiResponse<CouponDto>>('/promotions/coupons', data)
+      .post<ApiResponse<CouponDto>>('/coupons', data)
       .then((r) => r.data.data),
 
   updateCoupon: (id: string, data: Partial<CreateCouponRequest>) =>
     api
-      .put<ApiResponse<CouponDto>>(`/promotions/coupons/${id}`, data)
+      .put<ApiResponse<CouponDto>>(`/coupons/${id}`, data)
       .then((r) => r.data.data),
 
   toggleCoupon: (id: string, isActive: boolean) =>
     api
-      .patch<ApiResponse<CouponDto>>(`/promotions/coupons/${id}/toggle`, { isActive })
+      .patch<ApiResponse<CouponDto>>(`/coupons/${id}/toggle`, { isActive })
       .then((r) => r.data.data),
 
   deleteCoupon: (id: string) =>
-    api.delete<ApiResponse<null>>(`/promotions/coupons/${id}`).then((r) => r.data),
+    api.delete<ApiResponse<null>>(`/coupons/${id}`).then((r) => r.data),
 }

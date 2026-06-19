@@ -15,19 +15,19 @@ export interface CreateBannerRequest {
 export const bannerService = {
   getBanners: (params?: { page?: number; pageSize?: number; position?: BannerPosition }) =>
     api
-      .get<ApiResponse<PagedResult<BannerDto>>>('/promotions/banners', { params })
+      .get<ApiResponse<PagedResult<BannerDto>>>('/banners', { params })
       .then((r) => r.data.data),
 
   createBanner: (data: CreateBannerRequest) =>
     api
-      .post<ApiResponse<BannerDto>>('/promotions/banners', data)
+      .post<ApiResponse<BannerDto>>('/banners', data)
       .then((r) => r.data.data),
 
   updateBanner: (id: string, data: Partial<CreateBannerRequest>) =>
     api
-      .put<ApiResponse<BannerDto>>(`/promotions/banners/${id}`, data)
+      .put<ApiResponse<BannerDto>>(`/banners/${id}`, data)
       .then((r) => r.data.data),
 
   deleteBanner: (id: string) =>
-    api.delete<ApiResponse<null>>(`/promotions/banners/${id}`).then((r) => r.data),
+    api.delete<ApiResponse<null>>(`/banners/${id}`).then((r) => r.data),
 }

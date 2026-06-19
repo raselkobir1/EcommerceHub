@@ -67,4 +67,19 @@ public sealed class Banner : AuditableEntity
         IsActive &&
         (!ActiveFrom.HasValue || DateTime.UtcNow >= ActiveFrom.Value) &&
         (!ActiveTo.HasValue || DateTime.UtcNow <= ActiveTo.Value);
+
+    public void Update(string title, string imageUrl, string? subtitle,
+        string? linkUrl, int sortOrder, DateTime? activeFrom, DateTime? activeTo)
+    {
+        Title = title;
+        ImageUrl = imageUrl;
+        Subtitle = subtitle;
+        LinkUrl = linkUrl;
+        SortOrder = sortOrder;
+        ActiveFrom = activeFrom;
+        ActiveTo = activeTo;
+    }
+
+    public void Deactivate() => IsActive = false;
+    public void Activate() => IsActive = true;
 }
