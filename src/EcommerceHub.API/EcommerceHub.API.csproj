@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>EcommerceHub.API</RootNamespace>
+    <UserSecretsId>EcommerceHub-API-Secrets</UserSecretsId>
+  </PropertyGroup>
+
+  <!-- Shared Kernel -->
+  <ItemGroup>
+    <ProjectReference Include="..\EcommerceHub.Shared.Kernel\EcommerceHub.Shared.Kernel.csproj" />
+  </ItemGroup>
+
+  <!-- All Module References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Auth\EcommerceHub.Modules.Auth\EcommerceHub.Modules.Auth.csproj" />
+    <ProjectReference Include="..\Modules\Catalog\EcommerceHub.Modules.Catalog\EcommerceHub.Modules.Catalog.csproj" />
+    <ProjectReference Include="..\Modules\Orders\EcommerceHub.Modules.Orders\EcommerceHub.Modules.Orders.csproj" />
+    <ProjectReference Include="..\Modules\Cart\EcommerceHub.Modules.Cart\EcommerceHub.Modules.Cart.csproj" />
+    <ProjectReference Include="..\Modules\Inventory\EcommerceHub.Modules.Inventory\EcommerceHub.Modules.Inventory.csproj" />
+    <ProjectReference Include="..\Modules\Promotions\EcommerceHub.Modules.Promotions\EcommerceHub.Modules.Promotions.csproj" />
+    <ProjectReference Include="..\Modules\Customers\EcommerceHub.Modules.Customers\EcommerceHub.Modules.Customers.csproj" />
+    <ProjectReference Include="..\Modules\Suppliers\EcommerceHub.Modules.Suppliers\EcommerceHub.Modules.Suppliers.csproj" />
+    <ProjectReference Include="..\Modules\Reviews\EcommerceHub.Modules.Reviews\EcommerceHub.Modules.Reviews.csproj" />
+    <ProjectReference Include="..\Modules\Payments\EcommerceHub.Modules.Payments\EcommerceHub.Modules.Payments.csproj" />
+    <ProjectReference Include="..\Modules\Notifications\EcommerceHub.Modules.Notifications\EcommerceHub.Modules.Notifications.csproj" />
+    <ProjectReference Include="..\Modules\Reports\EcommerceHub.Modules.Reports\EcommerceHub.Modules.Reports.csproj" />
+  </ItemGroup>
+
+  <!-- API-level packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.9" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+  </ItemGroup>
+</Project>

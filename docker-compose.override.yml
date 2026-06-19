@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      target: development
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ecommercehub_dev;Username=postgres;Password=postgres;Include Error Detail=true;
+      - ConnectionStrings__Redis=redis:6379
+      - Jwt__Key=dev-secret-key-min-32-chars-long-dev-only-change-in-prod
+      - Jwt__Issuer=EcommerceHub
+      - Jwt__Audience=EcommerceHub.Users
+      - Jwt__AccessTokenExpiryMinutes=60
+      - Jwt__RefreshTokenExpiryDays=30
+      - SendGrid__ApiKey=SG.test
+    volumes:
+      - ./src:/app/src
+
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  redis:
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru

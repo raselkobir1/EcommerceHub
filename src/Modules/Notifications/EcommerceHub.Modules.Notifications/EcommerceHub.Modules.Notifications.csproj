@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><RootNamespace>EcommerceHub.Modules.Notifications</RootNamespace></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\EcommerceHub.Shared.Kernel\EcommerceHub.Shared.Kernel.csproj" />
+    <ProjectReference Include="..\..\Orders\EcommerceHub.Modules.Orders\EcommerceHub.Modules.Orders.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.14" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+</Project>
